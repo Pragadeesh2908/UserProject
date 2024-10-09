@@ -6,7 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            const alertMessage = $('.alert');
+            if (alertMessage.length) {
+                setTimeout(() => {
+                    alertMessage.alert('close');
+                }, 500);
+            }
+        });
+    </script>
 </head>
 
 <body>
@@ -20,8 +31,11 @@
                         <div class="card-body">
 
                             @if (Session::has('message'))
-                            <div class="alert alert-success" role="alert">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 {{ Session::get('message') }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
                             @endif
 
@@ -46,7 +60,7 @@
                 </div>
             </div>
         </div>
-</div>
+    </div>
 
 </body>
 
