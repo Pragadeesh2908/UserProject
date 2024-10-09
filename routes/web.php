@@ -44,9 +44,8 @@ Route::get('/password/update', [PasswordController::class, 'showUpdateForm'])->n
 Route::post('/password/update', [PasswordController::class, 'update'])->name('password.update');
 
 
-Route::get('forgot-password',[PasswordController::class,'forgotPassword'])->name('forgotPassword');
-Route::post('forgot-password',[PasswordController::class,'submitForgotPassword'])->name('forgot.password');
-Route::get('reset-password/{token}',[PasswordController::class,'resetPassword'])->name('resetPassword');
-Route::post('reset-password',[PasswordController::class,'submitResetPassword'])->name('reset.password');
-Route::get('/export-users', [LoginController::class,'export'])->name('export.users');
-
+Route::get('forgot-password', [PasswordController::class, 'forgotPassword'])->name('forgotPassword');
+Route::post('forgot-password', [PasswordController::class, 'submitForgotPassword'])->name('forgot.password');
+Route::get('reset-password/{token}', [PasswordController::class, 'resetPassword'])->name('resetPassword');
+Route::post('reset-password', [PasswordController::class, 'submitResetPassword'])->name('reset.password');
+Route::get('/export-users', [LoginController::class, 'export'])->name('export.users');
