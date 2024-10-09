@@ -14,7 +14,7 @@
             if (alertMessage.length) {
                 setTimeout(() => {
                     alertMessage.alert('close');
-                }, 500);
+                }, 5000);
             }
         });
     </script>
