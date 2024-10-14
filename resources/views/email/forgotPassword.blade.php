@@ -18,7 +18,7 @@
                         <h5 class="mb-4">Hello {{$user->first_name}},</h5>
                         <p>It seems like you requested to reset your password. You can reset your password by clicking the button below:</p>
                         
-                        <a href="{{ route('resetPassword', $token) }}" class="btn btn-primary btn-lg btn-block" role="button">
+                        <a href="{{ route('resetPassword',['email' => $user->email]) }}" class="btn btn-primary btn-lg btn-block" role="button">
                             Reset Password
                         </a>
                         

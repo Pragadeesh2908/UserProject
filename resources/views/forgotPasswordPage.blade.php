@@ -1,67 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <title>Forgot Password</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script>
-        $(document).ready(function() {
-            const alertMessage = $('.alert');
-            if (alertMessage.length) {
+        document.addEventListener("DOMContentLoaded", function() {
+            // Hide alert messages after 5 seconds
+            const alertSuccess = document.querySelector('.alert-success');
+            const alertError = document.querySelector('.alert-danger');
+
+            if (alertSuccess) {
                 setTimeout(() => {
-                    alertMessage.alert('close');
+                    alertSuccess.style.display = 'none';
+                }, 5000);
+            }
+
+            if (alertError) {
+                setTimeout(() => {
+                    alertError.style.display = 'none';
                 }, 5000);
             }
         });
     </script>
 </head>
-
 <body>
+    <div class="container mt-5">
+        <h2>Forgot Your Password?</h2>
 
-    <div class="login-form">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">Reset Password</div>
-                        <div class="card-body">
-
-                            @if (Session::has('message'))
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                {{ Session::get('message') }}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            @endif
-
-                            <form action="{{ route('forgot.password') }}" method="POST">
-                                @csrf
-                                <div class="form-group">
-                                    <label for="email_address" class="form-label">E-Mail Address</label>
-                                    <input type="email" id="email_address" class="form-control" name="email" required autofocus>
-                                    @if ($errors->has('email'))
-                                    <span class="text-danger">{{ $errors->first('email') }}</span>
-                                    @endif
-                                </div>
-                                <div class="form-group mt-3">
-                                    <button type="submit" class="btn btn-primary">
-                                        Send Password Reset Link
-                                    </button>
-                                </div>
-                            </form>
-
-                        </div>
-                    </div>
-                </div>
+        @if(session('message'))
+            <div class="alert alert-success">
+                {{ session('message') }}
             </div>
-        </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <form action="{{ route('forgot.password') }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
+                @if ($errors->has('email'))
+                    <span class="text-danger">{{ $errors->first('email') }}</span>
+                @endif
+            </div>
+
+            <button type="submit" class="btn btn-primary">Send Password Reset Link</button>
+        </form>
     </div>
-
 </body>
-
 </html>

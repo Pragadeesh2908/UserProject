@@ -27,6 +27,7 @@ class User extends Authenticatable
         'password',
         'phone_number',
         'role',
+        'password_reset'
     ];
     
 

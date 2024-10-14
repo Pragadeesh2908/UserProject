@@ -46,43 +46,30 @@ class PasswordController extends Controller
         $request->validate([
             'email' => 'required|email|exists:users'
         ]);
-        $email = $request->input('email');
-        $token = Str::random(64);
-        $expiresAt = Carbon::now()->addMinutes(10);
 
-        $email_exists = DB::table('password_resets')->where('email', $email)->exists();
-        $expire_time= DB::table('password_resets')->where('email', $email)->value('expires_at');
-        if(!$email_exists || ($email_exists && Carbon::now()->greaterThan($expire_time))){
-            DB::table('password_resets')->insert([
-                'email' => $request->input('email'),
-                'token' => $token,
-                'created_at' => Carbon::now(),
-                'expires_at' => $expiresAt
-            ]);
-        }
-        else{
-            return back()->with('info', 'The reset password link is already sent.');
-        }
-        $user = User::where('email', $request->input('email'))->first();
-        Mail::send('email.forgotPassword', ['token' => $token, 'user' => $user], function ($message) use ($request) {
-            $message->to($request->input('email'));
+        $email = $request->email;
+
+        DB::table('users')->where('email', $email)->update(['password_reset' => now()]);
+
+        $user = User::where('email', $email)->first();
+
+        Mail::send('email.forgotPassword', ['user' => $user], function ($message) use ($email) {
+            $message->to($email);
             $message->subject('Reset Password');
         });
 
-        return back()->with('message', 'we have emailed you reset password link');
+        return back()->with('message', 'We have emailed you a reset password link');
     }
 
-    public function resetPassword($token)
+    public function resetPassword($email) 
     {
-        $expires_link = DB::table('password_resets')->where('token', $token)->value('expires_at');
-
-        if (Carbon::now()->greaterThan(Carbon::parse($expires_link))) {
-            return redirect('/')->with('error', 'Invalid or expired token!');
+        $user = DB::table('users')->where('email', $email)->first();
+        if ($user->password_reset != null && Carbon::now()->diffInMinutes($user->password_reset) <= 10) {
+            return view('linkPage', ['email' => $email]);
         } else {
-            return view('linkPage', ['token' => $token]);
+            return redirect()->route('forgotPassword')->with('error', 'The password reset link is invalid or expired!');
         }
     }
-
 
     public function submitResetPassword(Request $request)
     {
@@ -98,14 +85,10 @@ class PasswordController extends Controller
             'password_confirmation' => 'required',
         ]);
 
-
-
         User::where('email', $request->input('email'))
             ->update(['password' => Hash::make($request->input('password'))]);
 
-        DB::table('password_resets')
-            ->where('email', $request->input('email'))
-            ->delete();
+        DB::table('users')->where('email', $request->input('email'))->update(['password_reset' => null]);
 
         return redirect('/')->with('message', 'Your password has been changed!');
     }
