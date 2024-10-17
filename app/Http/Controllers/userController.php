@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\UserExport;
+use App\Jobs\SendUserWelcomeEmail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -37,7 +38,7 @@ class userController extends Controller
             'password' => 'required|min:8',
         ]);
 
-        User::create([
+        $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
@@ -46,6 +47,7 @@ class userController extends Controller
             'password' => bcrypt($request->password),
             'role' => 1,
         ]);
+        SendUserWelcomeEmail::dispatch($user);
         return redirect()->route('users.index')->with('status', 'User created successfully');
     }
 
