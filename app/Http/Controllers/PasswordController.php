@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 
 class PasswordController extends Controller
 {
@@ -49,8 +48,7 @@ class PasswordController extends Controller
 
         $email = $request->email;
 
-        DB::table('users')->where('email', $email)->update(['password_reset' => now()]);
-
+       
         $user = User::where('email', $email)->first();
 
         Mail::send('email.forgotPassword', ['user' => $user], function ($message) use ($email) {
@@ -58,16 +56,18 @@ class PasswordController extends Controller
             $message->subject('Reset Password');
         });
 
+        DB::table('users')->where('email', $email)->update(['password_reset' => now()]);
+
         return back()->with('message', 'We have emailed you a reset password link');
     }
 
     public function resetPassword($email) 
     {
         $user = DB::table('users')->where('email', $email)->first();
-        if ($user->password_reset != null && Carbon::now()->diffInMinutes($user->password_reset) <= 10) {
+        if ($user->password_reset != null && Carbon::now()->diffInMinutes($user->password_reset) <= 1) {
             return view('linkPage', ['email' => $email]);
         } else {
-            return redirect()->route('forgotPassword')->with('error', 'The password reset link is invalid or expired!');
+            return redirect()->route('forgotPassword')->with('status', 'The password reset link is invalid or expired!');
         }
     }
 

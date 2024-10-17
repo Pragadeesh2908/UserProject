@@ -4,7 +4,11 @@
 
 @section('content')
     <h2 class="mb-4 text-center">User List</h2>
-
+    @if(session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+    @endif
     <a href="{{ route('users.create') }}" class="btn btn-success float-end">Create New User</a>
     <div class="d-flex justify-content-start mb-3">
         <a href="{{ route('export.users') }}" class="btn btn-success">Export Users to Excel</a>
@@ -37,11 +41,10 @@
             @endforeach
         </tbody>
     </table>
-
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/2.1.7/js/dataTables.js"></script>
-    <script src="https://cdn.datatables.net/2.1.7/js/dataTables.bootstrap5.js"></script>
+    <script src="{{ asset('js/jquery-3.js') }}"></script>
+    <script src="{{ asset('js/bootstrap5.js') }}"></script>
+    <script src="{{ asset('js/datatable_bootstrap5.js') }}"></script>
+    <script src="{{ asset('js/dataTables.js') }}"></script>
     <script>
         new DataTable('#userTable');
         function confirmDelete() {

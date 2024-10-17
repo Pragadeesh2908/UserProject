@@ -19,7 +19,7 @@
         </div>
     @endif
 
-    <form action="{{ route('password.update') }}" method="POST" onsubmit="return validateForm()">
+    <form action="{{ route('password.update') }}" method="POST" id="updatePasswordForm">
         @csrf
 
         <div class="mb-3">
@@ -32,7 +32,7 @@
 
         <div class="mb-3">
             <label for="new_password" class="form-label">New Password</label>
-            <input type="password" id="new_password" name="new_password" class="form-control" required onkeyup="validateNewPassword()">
+            <input type="password" id="new_password" name="new_password" class="form-control" required>
             @error('new_password')
                 <small class="text-danger">{{ $message }}</small>
             @enderror
@@ -41,7 +41,7 @@
 
         <div class="mb-3">
             <label for="new_password_confirmation" class="form-label">Confirm New Password</label>
-            <input type="password" id="new_password_confirmation" name="new_password_confirmation" class="form-control" required onkeyup="validatePasswordConfirmation()">
+            <input type="password" id="new_password_confirmation" name="new_password_confirmation" class="form-control" required>
             <small id="confirmPasswordError" class="text-danger"></small>
         </div>
 
@@ -50,36 +50,49 @@
     </form>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-function validateNewPassword() {
-    const newPassword = document.getElementById('new_password').value;
-    const newPasswordError = document.getElementById('newPasswordError');
-    
-    newPasswordError.textContent = '';
+$(document).ready(function() {
+    $('#new_password').on('keyup', function() {
+        validateNewPassword();
+    });
 
-    const passwordRequirements = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-    if (!passwordRequirements.test(newPassword)) {
-        newPasswordError.textContent = "New password must be at least 8 characters long, contain at least one uppercase letter and one special character.";
+    $('#new_password_confirmation').on('keyup', function() {
+        validatePasswordConfirmation();
+    });
+
+    $('#updatePasswordForm').on('submit', function(e) {
+        if (!validateForm()) {
+            e.preventDefault();
+        }
+    });
+
+    function validateNewPassword() {
+        const newPassword = $('#new_password').val();
+        $('#newPasswordError').text('');
+
+        const passwordRequirements = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+        if (!passwordRequirements.test(newPassword)) {
+            $('#newPasswordError').text("New password must be at least 8 characters long, contain at least one uppercase letter and one special character.");
+        }
     }
-}
 
-function validatePasswordConfirmation() {
-    const newPassword = document.getElementById('new_password').value;
-    const newPasswordConfirm = document.getElementById('new_password_confirmation').value;
-    const confirmPasswordError = document.getElementById('confirmPasswordError');
-    
-    confirmPasswordError.textContent = '';
+    function validatePasswordConfirmation() {
+        const newPassword = $('#new_password').val();
+        const newPasswordConfirm = $('#new_password_confirmation').val();
+        $('#confirmPasswordError').text('');
 
-    if (newPassword !== newPasswordConfirm) {
-        confirmPasswordError.textContent = "New password and confirmation do not match.";
+        if (newPassword !== newPasswordConfirm) {
+            $('#confirmPasswordError').text("New password and confirmation do not match.");
+        }
     }
-}
 
-function validateForm() {
-    validateNewPassword();
-    validatePasswordConfirmation();
+    function validateForm() {
+        validateNewPassword();
+        validatePasswordConfirmation();
 
-    return !document.getElementById('newPasswordError').textContent && !document.getElementById('confirmPasswordError').textContent;
-}
+        return !$('#newPasswordError').text() && !$('#confirmPasswordError').text();
+    }
+});
 </script>
 @endsection

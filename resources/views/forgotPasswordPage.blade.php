@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Hide alert messages after 5 seconds
             const alertSuccess = document.querySelector('.alert-success');
             const alertError = document.querySelector('.alert-danger');
 
@@ -33,14 +32,12 @@
             <div class="alert alert-success">
                 {{ session('message') }}
             </div>
-        @endif
-
-        @if(session('error'))
+        @elseif(session('status'))
             <div class="alert alert-danger">
-                {{ session('error') }}
+                {{ session('status') }}
             </div>
         @endif
-
+      
         <form action="{{ route('forgot.password') }}" method="POST">
             @csrf
             <div class="form-group">

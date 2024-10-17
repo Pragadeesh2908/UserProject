@@ -5,25 +5,29 @@
 @section('content')
 <div class="container my-5">
     <h2>Create New User</h2>
-    
-    <form action="{{ route('users.store') }}" method="POST" onsubmit="return validateForm()">
+    @if(session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+    @endif
+    <form action="{{ route('users.store') }}" method="POST" id="form_submit">
         @csrf
 
         <div class="mb-3">
             <label for="first_name" class="form-label">First Name</label>
-            <input type="text" id="first_name" name="first_name" class="form-control" onkeyup="validateFirstName()" required>
+            <input minlength="3" type="text" id="first_name" name="first_name" class="form-control" value="{{ old('first_name') }}" required>
             <small id="first_name_error" class="text-danger"></small>
         </div>
 
         <div class="mb-3">
             <label for="last_name" class="form-label">Last Name</label>
-            <input type="text" id="last_name" name="last_name" class="form-control" onkeyup="validateLastName()" required>
+            <input minlength="1" type="text" id="last_name" name="last_name" class="form-control" value="{{ old('last_name') }}" required>
             <small id="last_name_error" class="text-danger"></small>
         </div>
 
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" id="email" name="email" class="form-control {{$errors->has('email')?'is-invalid':''}}" value="{{old('email')}}" onkeyup="validateEmail()" required>
+            <input type="email" id="email" name="email" class="form-control {{$errors->has('email')?'is-invalid':''}}" value="{{ old('email') }}" required>
             @if($errors->has('email'))
             <span class="invalid-feedback">
                 <strong>{{$errors->first('email')}}</strong>
@@ -34,160 +38,88 @@
 
         <div class="mb-3">
             <label for="dob" class="form-label">Date of Birth</label>
-            <input type="date" id="dob" name="dob" class="form-control" onkeyup="validateDOB()">
+            <input type="date" id="dob" name="dob" value="{{ old('dob', optional(old('dob'))->format('Y-m-d')) }}" max="{{ date('Y-m-d', strtotime('-18 years')) }}" class="form-control">
             <small id="dob_error" class="text-danger"></small>
         </div>
 
         <div class="mb-3">
             <label for="phone_number" class="form-label">Phone Number</label>
-            <input type="text" id="phone_number" name="phone_number" class="form-control" onkeyup="validatePhoneNumber()">
+            <input type="text" id="phone_number" name="phone_number" class="form-control" value="{{ old('phone_number') }}">
             <small id="phone_error" class="text-danger"></small>
         </div>
 
         <div class="mb-3">
             <label for="password" class="form-label">Password</label>
-            <input type="password" id="password" name="password" class="form-control" onkeyup="validatePassword()" required>
+            <input type="password" id="password" name="password" class="form-control" required>
             <small id="password_error" class="text-danger"></small>
         </div>
 
         <div class="mb-3">
             <label for="confirm_password" class="form-label">Confirm Password</label>
-            <input type="password" id="confirm_password" name="confirm_password" class="form-control" onkeyup="validateConfirmPassword()" required>
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
             <small id="confirm_password_error" class="text-danger"></small>
         </div>
 
-        <button type="submit" class="btn btn-primary" onclick="validateForm()">Create User</button>
+        <button type="submit" class="btn btn-primary">Create User</button>
         <a href="{{ route('users.index') }}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
-    function validateFirstName() {
-        const firstName = document.getElementById('first_name').value;
-        const error = document.getElementById('first_name_error');
-        if (firstName.length < 2) {
-            error.textContent = 'First name must be at least 2 characters long';
-            return false;
-        } else {
-            error.textContent = '';
-            return true;
-        }
-    }
+    $(document).ready(function() {
 
-    function validateLastName() {
-        const lastName = document.getElementById('last_name').value;
-        const error = document.getElementById('last_name_error');
-        if (lastName.length < 1) {
-            error.textContent = 'Last name must be at least 2 characters long';
-            return false;
-        } else {
-            error.textContent = '';
-            return true;
-        }
-    }
-
-    function validateEmail() {
-        const email = document.getElementById('email').value;
-        const error = document.getElementById('email_error');
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailPattern.test(email)) {
-            error.textContent = 'Invalid email format';
-            return false;
-        } else {
-            error.textContent = '';
-            return true;
-        }
-    }
-
-
-    function setDefaultDOB() {
-        const dobInput = document.getElementById('dob');
-        const today = new Date();
-        const eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-
-        const formattedDate = eighteenYearsAgo.toISOString().split('T')[0];
-        dobInput.value = formattedDate;
-        dobInput.max = formattedDate;
-    }
-
-    window.onload = setDefaultDOB;
-
-    function validateDOB() {
-        const dobInput = document.getElementById('dob').value;
-        const error = document.getElementById('dob_error');
-
-        if (dobInput) {
-            const dob = new Date(dobInput);
-            const today = new Date();
-
-            let age = today.getFullYear() - dob.getFullYear();
-            const monthDiff = today.getMonth() - dob.getMonth();
-            const dayDiff = today.getDate() - dob.getDate();
-
-
-            if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-                age--;
-            }
-
-
-            if (age < 18) {
-                error.textContent = 'You must be at least 18 years old';
-                return false;
+        $('#phone_number').on('keyup', function() {
+            const phoneNumber = $(this).val();
+            const phonePattern = /^[0-9]{10}$/;
+            if (phoneNumber !== "" && !phonePattern.test(phoneNumber)) {
+                $('#phone_error').text('Phone number must be 10 digits');
             } else {
-                error.textContent = '';
-                return true;
+                $('#phone_error').text('');
             }
-        }
-        return true;
-    }
+        });
 
-    function validatePhoneNumber() {
-        const phone = document.getElementById('phone_number').value;
-        const error = document.getElementById('phone_error');
-        const phonePattern = /^\d{10}$/;
-        if (!phonePattern.test(phone)) {
-            error.textContent = 'Phone number must be 10 digits long';
-            return false;
-        } else {
-            error.textContent = '';
-            return true;
-        }
-    }
+        $('#password').on('keyup', function() {
+            const password = $(this).val();
 
-    function validatePassword() {
-        const password = document.getElementById('password').value;
-        const error = document.getElementById('password_error');
-        const passwordPattern = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[a-zA-Z0-9]).{8,}$/;
+            const capitalLetterPattern = /[A-Z]/;
+            const specialCharPattern = /[!@#$%^&*(),.?":{}|<>]/;
 
-        if (!passwordPattern.test(password)) {
-            error.textContent = 'Password must be at least 8 characters long, contain at least 1 capital letter and 1 special character';
-            return false;
-        } else {
-            error.textContent = '';
-            return true;
-        }
-    }
+            if (password.length < 8) {
+                $('#password_error').text('Password must be at least 8 characters long');
+            } else if (!capitalLetterPattern.test(password)) {
+                $('#password_error').text('Password must contain at least 1 capital letter');
+            } else if (!specialCharPattern.test(password)) {
+                $('#password_error').text('Password must contain at least 1 special character');
+            } else {
+                $('#password_error').text('');
+            }
+        });
 
-    function validateConfirmPassword() {
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm_password').value;
-        const error = document.getElementById('confirm_password_error');
-        if (password !== confirmPassword) {
-            error.textContent = 'Passwords do not match';
-            return false;
-        } else {
-            error.textContent = '';
-            return true;
-        }
-    }
+        $('#confirm_password').on('keyup', function() {
+            const confirmPassword = $(this).val();
+            const password = $('#password').val();
+            if (confirmPassword !== password) {
+                $('#confirm_password_error').text('Passwords do not match');
+            } else {
+                $('#confirm_password_error').text('');
+            }
+        });
 
-    function validateForm() {
-        return validateFirstName() &&
-            validateLastName() &&
-            validateEmail() &&
-            validateDOB() &&
-            validatePhoneNumber() &&
-            validatePassword() &&
-            validateConfirmPassword();
-    }
+        $('#form_submit').on('submit', function(event) {
+            $('#first_name').trigger('keyup');
+            $('#last_name').trigger('keyup');
+            $('#email').trigger('keyup');
+            $('#dob').trigger('keyup');
+            $('#phone_number').trigger('keyup');
+            $('#password').trigger('keyup');
+            $('#confirm_password').trigger('keyup');
+
+            if ($('.text-danger:contains("must")').length > 0) {
+                event.preventDefault();
+            }
+        });
+    });
 </script>
+
 @endsection
