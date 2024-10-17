@@ -51,4 +51,22 @@
             return confirm('Are you sure you want to delete this user? This action cannot be undone.');
         }
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const alertSuccess = document.querySelector('.alert-success');
+            const alertError = document.querySelector('.alert-danger');
+
+            if (alertSuccess) {
+                setTimeout(() => {
+                    alertSuccess.style.display = 'none';
+                }, 5000);
+            }
+
+            if (alertError) {
+                setTimeout(() => {
+                    alertError.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
 @endsection
