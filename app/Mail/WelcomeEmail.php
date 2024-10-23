@@ -37,7 +37,6 @@ class WelcomeEmail extends Mailable
      */
     public function content(): Content
     {
-        dd($this->user);
         return new Content(
             view: 'email.welcomemail',
             with: [

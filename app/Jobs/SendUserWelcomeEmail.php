@@ -31,5 +31,5 @@ class SendUserWelcomeEmail implements ShouldQueue
     {
         Mail::to($this->user->email)->send(new WelcomeEmail($this->user));
 
-    }
+        }
 }

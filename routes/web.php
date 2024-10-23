@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\managerController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\stockController;
 use App\Http\Controllers\userController;
 
 /*
@@ -44,4 +46,20 @@ Route::get('forgot-password', [PasswordController::class, 'forgotPassword'])->na
 Route::post('forgot-password', [PasswordController::class, 'submitForgotPassword'])->name('forgot.password');
 Route::get('reset-password/{email}', [PasswordController::class, 'resetPassword'])->name('resetPassword');
 Route::post('reset-password', [PasswordController::class, 'submitResetPassword'])->name('reset.password');
+
+//stocks
+Route::get('stock', [stockController::class, 'viewStock'])->name('stock.index');
+Route::get('stock/create', [stockController::class, 'create'])->name('stock.create');
+Route::post('stock/store', [stockController::class, 'store'])->name('stock.store');
+Route::get('stock/{id}/edit', [stockController::class, 'edit'])->name('stock.edit');
+Route::delete('stock/{id}', [stockController::class, 'destroy'])->name('stock.destroy');
+Route::put('stock/{id}', [stockController::class, 'update'])->name('stock.update');
+
+//manager
+Route::get('managers', [ManagerController::class, 'viewManager'])->name('manager.index');
+Route::get('managers/create', [managerController::class, 'create'])->name('manager.create');
+Route::post('managers/store', [ManagerController::class, 'store'])->name('manager.store');
+Route::get('managers/{id}/edit', [ManagerController::class, 'edit'])->name('manager.edit');
+Route::put('managers/{id}', [ManagerController::class, 'update'])->name('manager.update');
+Route::delete('managers/{id}', [ManagerController::class, 'destroy'])->name('manager.destroy');
 

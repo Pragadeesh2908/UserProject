@@ -115,6 +115,12 @@
                     <li class="nav-item">
                         <a href="{{ route('users.index') }}" class="nav-link">Users</a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ route('stock.index') }}" class="nav-link">Stocks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('manager.index') }}" class="nav-link">Manager</a>
+                    </li>
                     @endif
                 </ul>
             </nav>
@@ -129,8 +135,26 @@
         </footer>
 
         <script src="{{ asset('js/popper.js')}}"></script>
-        <script src="{{ asset('js/bootstrap4.js')}}"></script>
+        <!-- <script src="{{ asset('js/bootstrap4.js')}}"></script> -->
         
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const alertSuccess = document.querySelector('.alert-success');
+            const alertError = document.querySelector('.alert-danger');
+
+            if (alertSuccess) {
+                setTimeout(() => {
+                    alertSuccess.style.display = 'none';
+                }, 5000);
+            }
+
+            if (alertError) {
+                setTimeout(() => {
+                    alertError.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
     </body>
 
     </html>

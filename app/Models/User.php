@@ -30,7 +30,10 @@ class User extends Authenticatable
         'password_reset'
     ];
     
-
+    public function manager()
+    {
+        return $this->hasMany(Manager::class);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
