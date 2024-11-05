@@ -29,7 +29,7 @@ class managerController extends Controller
         $validatedData = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:manager',
+            'email' => 'required|string|email|max:255|unique:users',
             'dob' => 'required|date',
             'quantity' => 'required|array',
             'quantity.*' => 'integer|min:0',
@@ -39,13 +39,21 @@ class managerController extends Controller
             'user_id.*' => 'exists:users,id',
             'password' => 'required|string|min:8|confirmed',
         ]);
-
-        $manager = Manager::create([
+        $user = User::create([
             'first_name' => $validatedData['first_name'],
             'last_name' => $validatedData['last_name'],
             'email' => $validatedData['email'],
             'dob' => $validatedData['dob'],
             'password' => Hash::make($validatedData['password']),
+            'role' => 3,
+        ]);
+        $manager = Manager::create([
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'dob' => $user->dob,
+            'password' => $user->password,
+            'user_id' => $user->id,
         ]);
 
         $stockErrors = [];
@@ -166,5 +174,58 @@ class managerController extends Controller
         $manager->delete();
 
         return redirect()->route('manager.index')->with('success', 'Manager deleted successfully.');
+    }
+    public function assignStockToUserForm($userId)
+    {
+        $managerId = Manager::where('user_id', $userId)->value('id');
+        $stocks = DB::table('manager_stock')
+            ->where('manager_stock.manager_id', $managerId)
+            ->where('manager_stock.quantity', '>', 0)
+            ->join('stock', 'manager_stock.stock_id', '=', 'stock.id')
+            ->select('stock.id as stock_id', 'stock.name', 'manager_stock.quantity')
+            ->get();
+
+
+        $users = DB::table('manager_user')
+            ->where('manager_id', $managerId)
+            ->join('users', 'manager_user.user_id', '=', 'users.id')
+            ->select('users.id', 'users.first_name', 'users.last_name')
+            ->get();
+        return view('manager.assign_stock', compact('stocks', 'users', 'managerId'));
+    }
+    public function assignStockToUser(Request $request)
+    {
+        $validatedData = $request->validate([
+            'manager_id' => 'required|exists:manager,id',
+            'user_id' => 'required|exists:users,id',
+            'stock_id' => 'required|exists:stock,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $managerId = $validatedData['manager_id'];
+        $stockId = $validatedData['stock_id'];
+        $userId = $validatedData['user_id'];
+        $quantityToAssign = $validatedData['quantity'];
+
+        $managerStock = DB::table('manager_stock')
+            ->where('manager_id', $managerId)
+            ->where('stock_id', $stockId)
+            ->first();
+
+        if ($managerStock && $managerStock->quantity >= $quantityToAssign) {
+            DB::table('manager_stock')
+                ->where('manager_id', $managerId)
+                ->where('stock_id', $stockId)
+                ->update(['quantity' => $managerStock->quantity - $quantityToAssign]);
+
+            DB::table('user_stock')->updateOrInsert(
+                ['user_id' => $userId, 'stock_id' => $stockId],
+                ['quantity' => DB::raw("quantity + $quantityToAssign")]
+            );
+
+            return redirect()->route('home')->with('status', 'Stock assigned to user successfully.');
+        } else {
+            return redirect()->back()->withErrors(['quantity' => 'Not enough stock available for this assignment.']);
+        }
     }
 }

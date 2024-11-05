@@ -23,39 +23,56 @@
 
         <div class="mb-3">
             <label for="first_name" class="form-label">First Name:</label>
-            <input type="text" minlength="3" class="form-control" name="first_name" required>
+            <input type="text" minlength="3" class="form-control" name="first_name" value="{{ old('first_name') }}" required>
         </div>
 
         <div class="mb-3">
             <label for="last_name" class="form-label">Last Name:</label>
-            <input type="text" minlength="1" class="form-control" name="last_name" required>
+            <input type="text" minlength="1" class="form-control" name="last_name" value="{{ old('last_name') }}" required>
         </div>
 
         <div class="mb-3">
             <label for="email" class="form-label">Email:</label>
-            <input type="email" class="form-control" name="email" required>
+            <input type="email" class="form-control" name="email" value="{{ old('email') }}" required>
         </div>
 
         <div class="mb-3">
             <label for="dob" class="form-label">Date of Birth:</label>
-            <input type="date" class="form-control" name="dob" max="{{ date('Y-m-d', strtotime('-18 years')) }}" required>
+            <input type="date" class="form-control" name="dob" max="{{ date('Y-m-d', strtotime('-18 years')) }}" value="{{ old('dob') }}" required>
         </div>
 
         <div class="mb-3">
             <label for="stocks" class="form-label">Assign Stocks:</label>
             <div id="stockSelection">
-                <div class="input-group mb-2 stock-group">
-                    <select name="stock_id[]" class="form-select stock-select" required>
-                        <option value="">Select Stock</option>
-                        @foreach($stocks as $stock)
-                        <option value="{{ $stock->id }}" data-quantity="{{ $stock->quantity }}">{{ $stock->name }}</option>
-                        @endforeach
-                    </select>
-                    <input type="number" name="quantity[]" class="form-control quantity-input" min="1" style="width: 100px; margin-left: 5px;" placeholder="Qty" required>
-                    <button type="button" class="btn btn-danger btn-sm close-stock-button" style="display: none;">X</button><br>
-                    <span class="stock-quantity ms-2" style="font-weight: bold; display: none;"></span>
-                    <span class="error-message text-danger" style="display: none; margin-left: 5px;"></span>
-                </div>
+                @if(old('stock_id'))
+                    @foreach(old('stock_id') as $index => $stockId)
+                        <div class="input-group mb-2 stock-group">
+                            <select name="stock_id[]" class="form-select stock-select" required>
+                                <option value="">Select Stock</option>
+                                @foreach($stocks as $stock)
+                                <option value="{{ $stock->id }}" data-quantity="{{ $stock->quantity }}" {{ $stock->id == $stockId ? 'selected' : '' }}>{{ $stock->name }}</option>
+                                @endforeach
+                            </select>
+                            <input type="number" name="quantity[]" class="form-control quantity-input" min="1" style="width: 100px; margin-left: 5px;" placeholder="Qty" value="{{ old('quantity')[$index] }}" required>
+                            <button type="button" class="btn btn-danger btn-sm close-stock-button" style="display: none;">X</button><br>
+                            <span class="stock-quantity ms-2" style="font-weight: bold; display: none;"></span>
+                            <span class="error-message text-danger" style="display: none; margin-left: 5px;"></span>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="input-group mb-2 stock-group">
+                        <select name="stock_id[]" class="form-select stock-select" required>
+                            <option value="">Select Stock</option>
+                            @foreach($stocks as $stock)
+                            <option value="{{ $stock->id }}" data-quantity="{{ $stock->quantity }}">{{ $stock->name }}</option>
+                            @endforeach
+                        </select>
+                        <input type="number" name="quantity[]" class="form-control quantity-input" min="1" style="width: 100px; margin-left: 5px;" placeholder="Qty" required>
+                        <button type="button" class="btn btn-danger btn-sm close-stock-button" style="display: none;">X</button><br>
+                        <span class="stock-quantity ms-2" style="font-weight: bold; display: none;"></span>
+                        <span class="error-message text-danger" style="display: none; margin-left: 5px;"></span>
+                    </div>
+                @endif
             </div>
             <button type="button" id="addStockButton" class="btn btn-primary btn-sm">Add Another Stock</button>
         </div>
@@ -65,7 +82,7 @@
             <select name="user_id[]" id="userDropdown" data-live-search="true" class="selectpicker" multiple required>
                 @foreach($users as $user)
                 @if($user->role == 1)
-                <option value="{{ $user->id }}">{{ $user->first_name }}</option>
+                <option value="{{ $user->id }}" {{ in_array($user->id, old('user_id', [])) ? 'selected' : '' }}>{{ $user->first_name }}</option>
                 @endif
                 @endforeach
             </select>
@@ -84,6 +101,7 @@
         <button type="submit" class="btn btn-success">Create Manager</button>
     </form>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
@@ -215,7 +233,5 @@
         margin-right: 5px;
     }
 </style>
-
-
 
 @endsection

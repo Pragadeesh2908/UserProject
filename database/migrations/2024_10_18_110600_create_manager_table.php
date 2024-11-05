@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->date('dob');
             $table->string('password');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

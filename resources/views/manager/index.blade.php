@@ -14,7 +14,7 @@
             @endif
 
             <div class="mb-3">
-                <a href="{{ route('manager.create') }}" class="btn btn-primary">Create New Manager</a>
+                <a href="{{ route('manager.create') }}" class="btn btn-success">Create New Manager</a>
             </div>
 
             <table class="table table-bordered table-striped">

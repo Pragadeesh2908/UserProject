@@ -2,11 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Manager;
+use App\Services\ManagerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+
 class LoginController extends Controller
 {
+    protected $managerService;
+
+    public function __construct(ManagerService $managerService)
+    {
+        $this->managerService = $managerService;
+    }
+
     public function showLoginForm()
     {
         return view('login');
@@ -35,7 +45,9 @@ class LoginController extends Controller
     public function home()
     {
         $user = Auth::user();
-        return view('home', compact('user'));
+        $stock = $this->managerService->getManagerStocks();
+        $users = $this->managerService->getManagerUser();
+        return view('home', compact('stock', 'users'));
     }
     public function logout()
     {

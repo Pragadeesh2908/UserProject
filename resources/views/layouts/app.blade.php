@@ -103,15 +103,21 @@
         <div class="d-flex flex-grow-1">
             <nav class="sidebar">
                 <ul class="nav flex-column">
-                @if(Auth::user()->role == 1)
+                    @if(Auth::user()->role != 2)
                     <li class="nav-item">
-                        <a class="nav-link" href="home">Home</a>
+                        <a class="nav-link" href="{{ route('home') }}">Home</a>
                     </li>
-                @endif
+                    <li>
+                        <a href="{{ route('manager.assignStockToUserForm', ['managerId' => Auth::id()]) }}" class="nav-link">Assign Stock</a>
+                    </li>
+                    <li>
+                        <a href="{{route('userstock')}}" class="nav-link">User & Stock</a>
+                    </li>
+                    @endif
                     <!-- <li class="nav-item">
                         <a class="nav-link" href="{{ route('profile') }}">Profile</a>
                     </li> -->
-                    @if(Auth::user()->role != 1)
+                    @if(Auth::user()->role == 2 )
                     <li class="nav-item">
                         <a href="{{ route('users.index') }}" class="nav-link">Users</a>
                     </li>
@@ -133,28 +139,28 @@
         <footer>
             <p>&copy; 2024 My Application. All rights reserved.</p>
         </footer>
-
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="{{ asset('js/popper.js')}}"></script>
-        <!-- <script src="{{ asset('js/bootstrap4.js')}}"></script> -->
-        
+        <script src="{{ asset('js/bootstrap4.js')}}"></script>
+
         <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const alertSuccess = document.querySelector('.alert-success');
-            const alertError = document.querySelector('.alert-danger');
+            document.addEventListener("DOMContentLoaded", function() {
+                const alertSuccess = document.querySelector('.alert-success');
+                const alertError = document.querySelector('.alert-danger');
 
-            if (alertSuccess) {
-                setTimeout(() => {
-                    alertSuccess.style.display = 'none';
-                }, 5000);
-            }
+                if (alertSuccess) {
+                    setTimeout(() => {
+                        alertSuccess.style.display = 'none';
+                    }, 5000);
+                }
 
-            if (alertError) {
-                setTimeout(() => {
-                    alertError.style.display = 'none';
-                }, 5000);
-            }
-        });
-    </script>
+                if (alertError) {
+                    setTimeout(() => {
+                        alertError.style.display = 'none';
+                    }, 5000);
+                }
+            });
+        </script>
     </body>
 
     </html>

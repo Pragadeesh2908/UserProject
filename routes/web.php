@@ -21,6 +21,8 @@ use App\Http\Controllers\userController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+
+//login
 Route::get('/', function () {
     return view('login');
 });
@@ -29,6 +31,7 @@ Route::post('login', [LoginController::class, 'login'])->name('login');
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('home', [LoginController::class, 'home'])->name('home');
 
+//user
 Route::get('users/{id}', [userController::class, 'users'])->name('users.show');
 Route::get('user/{id}', [userController::class, 'users'])->middleware('auth');
 Route::get('users', [userController::class, 'index'])->name('users.index');
@@ -39,7 +42,9 @@ Route::delete('users/{id}', [userController::class, 'destroy'])->name('users.des
 Route::get('create', [userController::class, 'create'])->name('users.create');
 Route::post('users', [userController::class, 'store'])->name('users.store');
 Route::get('/export-users', [userController::class, 'export'])->name('export.users');
+Route::get('userstock', [userController::class, 'userStock'])->name('userstock');
 
+//password
 Route::get('/password/update', [PasswordController::class, 'showUpdateForm'])->name('password.update.form');
 Route::post('/password/update', [PasswordController::class, 'update'])->name('password.update');
 Route::get('forgot-password', [PasswordController::class, 'forgotPassword'])->name('forgotPassword');
@@ -62,4 +67,5 @@ Route::post('managers/store', [ManagerController::class, 'store'])->name('manage
 Route::get('managers/{id}/edit', [ManagerController::class, 'edit'])->name('manager.edit');
 Route::put('managers/{id}', [ManagerController::class, 'update'])->name('manager.update');
 Route::delete('managers/{id}', [ManagerController::class, 'destroy'])->name('manager.destroy');
-
+Route::get('manager/{managerId}/assign-stock', [ManagerController::class, 'assignStockToUserForm'])->name('manager.assignStockToUserForm');
+Route::post('manager/assign-stock', [ManagerController::class, 'assignStockToUser'])->name('manager.assignStockToUser');

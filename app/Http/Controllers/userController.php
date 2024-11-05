@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class userController extends Controller
@@ -53,7 +54,7 @@ class userController extends Controller
 
     public function index()
     {
-        $users =Auth::user();
+        $users = Auth::user();
         $user = User::where('role', 1)->get();
         return view('index', compact('user'));
     }
@@ -86,6 +87,15 @@ class userController extends Controller
         $user->delete();
 
         return redirect()->route('users.index')->with('status', 'User deleted successfully');
+    }
+    public function userStock()
+    {
+        $user_stock = DB::table('user_stock')
+            ->join('users', 'user_stock.user_id', '=', 'users.id')
+            ->join('stock', 'user_stock.stock_id', '=', 'stock.id')
+            ->select('user_stock.id', 'users.first_name', 'stock.name as stock_name', 'user_stock.quantity')
+            ->get();
+        return view('userstock', compact('user_stock'));
     }
     public function export()
     {

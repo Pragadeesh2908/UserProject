@@ -36,15 +36,19 @@
             <input type="date" id="dob" name="dob" class="form-control" value="{{ $user->dob ? $user->dob->format('Y-m-d') : '' }}" max="{{ date('Y-m-d', strtotime('-18 years')) }}">
             <small id="dob_error" class="text-danger"></small>
         </div>
-
+        @if(Auth::user()->role != 3)
         <div class="mb-3">
             <label for="phone_number" class="form-label">Phone Number</label>
             <input type="text" id="phone_number" name="phone_number" class="form-control" value="{{ $user->phone_number }}">
             <small id="phoneNumberError" class="text-danger"></small>
         </div>
-
+        @endif
         <button type="submit" class="btn btn-primary">Update User</button>
+        @if(Auth::user()->role != 3)
         <a href="{{ route('users.index') }}" class="btn btn-secondary">Cancel</a>
+        @else
+        <a href="{{ route('home') }}" class="btn btn-secondary">Cancel</a>
+        @endif
     </form>
 </div>
 

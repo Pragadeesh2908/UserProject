@@ -16,6 +16,7 @@ class Manager extends Model
         'email',
         'dob',
         'password',
+        'user_id'
     ];
 
     public function stocks()
